@@ -31,18 +31,25 @@ app.post('/auth/signup', ...validateSignUp, async (req, res) => {
 
         const password = req.body.password
         const salt = await bcrypt.genSalt(10);
-        const passwordHash = await bcrypt.hash(password, salt);
+        const passHash = await bcrypt.hash(password, salt);
 
         const doc = new UserModel({
             fullName: req.body.fullName,
             email: req.body.email,
-            passwordHash,
+            passwordHash: passHash,
             avatarURL: req.body.avatarURL,
         })
 
         const user = await doc.save()
+        const {passwordHash, ...userWithoutHash} = user._doc
 
-        res.json(user)
+        const token = jwt.sign({
+            _id: user._id
+        }, process.env.SECRET, {
+            expiresIn: process.env.JWT_EXPIRATION,
+        })
+
+        res.json({...userWithoutHash, token})
     } catch (e) {
         console.log(e)
         res.status(500).json({
