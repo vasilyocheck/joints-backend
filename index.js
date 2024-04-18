@@ -6,6 +6,7 @@ import {validationResult} from "express-validator";
 import {validateSignUp} from "./validators/auth.js";
 import UserModel from "./models/user.js";
 import bcrypt from "bcrypt";
+import checkAuth from "./utils/checkAuth.js";
 
 const app = express();
 dotenv.config();
@@ -61,15 +62,63 @@ app.post('/auth/signup', ...validateSignUp, async (req, res) => {
 })
 
 
-app.post('/auth/login', (req, res) => {
-    const token = jwt.sign({
-        email: req.body.email,
-        fullName: req.body.fullName,
-    }, process.env.SECRET)
-    res.send({
-        success: true,
-        token
-    })
+app.post('/auth/login', async (req, res) => {
+    try {
+        const user = await UserModel.findOne({email: req.body.email})
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+        const isPassValid = await bcrypt.compare(req.body.password, user._doc.passwordHash)
+        if(!isPassValid){
+            return res.status(400).json({
+                message: 'Invalid login or password.'
+            })
+        }
+        const token = jwt.sign({
+                _id: user._id,
+            }, process.env.SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRATION,
+            })
+
+        const { passwordHash, ...userData } = user._doc
+
+        res.json({...userData, token})
+
+
+    } catch(e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed',
+            error: 'Failed to log in.'
+        })
+    }
+})
+
+app.get('/auth/me', checkAuth ,async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId)
+        console.log(req.userId)
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+        const { passwordHash, ...userWithoutPassHash } = user._doc
+
+        res.send(userWithoutPassHash)
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed.',
+            error: 'Not authorized.'
+        })
+
+    }
 })
 
 app.listen(4444, (e) => {
