@@ -24,12 +24,12 @@ app.use(cors({
     optionsSuccessStatus: 200
 }))
 app.use(express.json());
-app.use(function (req, res, next) {
+/*app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers","*");
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     next();
-});
+});*/
 
 app.get('/', (req, res) => {
     res.send('Welcome to Joints API!');
