@@ -18,7 +18,7 @@ mongoose.connect(process.env.JOINTS_DB)
     })
     .catch(err => console.log(err));
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:5173/',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type'],
     optionsSuccessStatus: 200
