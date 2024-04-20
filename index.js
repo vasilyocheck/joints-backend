@@ -7,6 +7,7 @@ import {validateSignUp} from "./validators/auth.js";
 import UserModel from "./models/user.js";
 import bcrypt from "bcrypt";
 import checkAuth from "./utils/checkAuth.js";
+import cors from 'cors'
 
 const app = express();
 dotenv.config();
@@ -30,6 +31,9 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
+app.use(cors({
+    origin: 'https://joints-front.vercel.app'
+}));
 
 app.get('/', (req, res) => {
     res.send('Welcome to Joints API!');
