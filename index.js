@@ -19,13 +19,7 @@ mongoose.connect(process.env.JOINTS_DB)
 
 app.use(express.json());
 app.use(function (req, res, next) {
-    const allowedOrigins = ['http://localhost:5173', 'https://joints-front.vercel.app'];
-    const origin = req.headers.origin;
-
-    if (allowedOrigins.includes(origin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-    }
-
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
