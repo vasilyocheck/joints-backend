@@ -97,8 +97,10 @@ app.post('/auth/login', async (req, res) => {
             })
 
         const { passwordHash, ...userData } = user._doc
-
-        res.json({...userData, token})
+        res.cookie('jwt', token, {
+            httpOnly: true
+        })
+        return res.json({...userData, token})
 
     } catch(e) {
         console.log(e)
