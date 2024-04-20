@@ -19,7 +19,7 @@ mongoose.connect(process.env.JOINTS_DB)
 
 app.use(express.json());
 app.use(function (req, res, next) {
-    const allowedOrigins = ['http://localhost:5173', 'https://joints-backend.vercel.app/'];
+    const allowedOrigins = ['http://localhost:5173', 'https://joints-front.vercel.app'];
     const origin = req.headers.origin;
 
     if (allowedOrigins.includes(origin)) {
