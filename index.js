@@ -33,7 +33,8 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(cors({
-    origin: 'https://joints-front.vercel.app'
+    origin: 'https://joints-front.vercel.app',
+    credentials: true,
 }));
 
 app.get('/', (req, res) => {
