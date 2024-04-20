@@ -7,6 +7,7 @@ import {validateSignUp} from "./validators/auth.js";
 import UserModel from "./models/user.js";
 import bcrypt from "bcrypt";
 import checkAuth from "./utils/checkAuth.js";
+import cors from "cors";
 
 const app = express();
 dotenv.config();
@@ -16,7 +17,12 @@ mongoose.connect(process.env.JOINTS_DB)
     console.log('DB is connected')
     })
     .catch(err => console.log(err));
-
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+    optionsSuccessStatus: 200
+}))
 app.use(express.json());
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers","*");
