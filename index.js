@@ -103,7 +103,9 @@ app.post('/auth/login', async (req, res) => {
 
         const { passwordHash, ...userData } = user._doc
         res.cookie('jwt', token, {
-            httpOnly: true
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
         })
         return res.json({...userData, token})
 
