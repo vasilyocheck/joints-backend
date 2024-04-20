@@ -7,25 +7,25 @@ import {validateSignUp} from "./validators/auth.js";
 import UserModel from "./models/user.js";
 import bcrypt from "bcrypt";
 import checkAuth from "./utils/checkAuth.js";
-import cors from "cors";
 
 const app = express();
 dotenv.config();
 
 mongoose.connect(process.env.JOINTS_DB)
     .then(() => {
-    console.log('DB is connected')
+        console.log('DB is connected')
     })
     .catch(err => console.log(err));
-app.use(cors({
-    origin: 'http://localhost:5173/',
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
-    optionsSuccessStatus: 200
-}))
+
 app.use(express.json());
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+app.use(function (req, res, next) {
+    const allowedOrigins = ['http://localhost:5173', 'https://joints-backend.vercel.app/'];
+    const origin = req.headers.origin;
+
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+    }
+
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
@@ -99,12 +99,6 @@ app.post('/auth/login', async (req, res) => {
         const { passwordHash, ...userData } = user._doc
 
         res.json({...userData, token})
-       /* res.cookie('jwt', JSON.stringify(token), {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'None',
-            maxAge: 3600000
-        })*/
 
 
     } catch(e) {
