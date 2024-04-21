@@ -111,7 +111,7 @@ app.post('/auth/login', async (req, res) => {
             domain: 'https://joints-front.vercel.app',
         }
 
-        res.cookie('jwt', token, cookieOptions )
+        res.cookie('jwt', token )
         return res.json({...userData, token})
 
     } catch(e) {
