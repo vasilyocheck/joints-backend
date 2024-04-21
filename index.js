@@ -103,11 +103,14 @@ app.post('/auth/login', async (req, res) => {
             })
 
         const { passwordHash, ...userData } = user._doc
-        res.cookie('jwt', token, {
+
+        const cookieOptions = {
             httpOnly: true,
             sameSite: 'none',
-            secure: true,
-        })
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        }
+
+        res.cookie('jwt', token, cookieOptions )
         return res.json({...userData, token})
 
     } catch(e) {
