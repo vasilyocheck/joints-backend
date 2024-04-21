@@ -8,6 +8,7 @@ import UserModel from "./models/user.js";
 import bcrypt from "bcrypt";
 import checkAuth from "./utils/checkAuth.js";
 import cors from 'cors'
+import cookieParser from 'cookie-parser';
 
 const app = express();
 dotenv.config();
@@ -19,6 +20,7 @@ mongoose.connect(process.env.JOINTS_DB)
     .catch(err => console.log(err));
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(function (req, res, next) {
     const allowedOrigins = ['http://localhost:5173', 'https://joints-front.vercel.app'];
     const origin = req.headers.origin;
@@ -112,7 +114,7 @@ app.post('/auth/login', async (req, res) => {
         }
 
         res.cookie('jwt', token )*/
-        res.set('Set-Cookie', `session=${token}`)
+        res.cookie('jwt', JSON.stringify(token))
         return res.json({...userData, token})
 
     } catch(e) {
