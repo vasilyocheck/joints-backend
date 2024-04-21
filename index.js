@@ -149,6 +149,21 @@ app.get('/auth/me', checkAuth ,async (req, res) => {
     }
 })
 
+app.get('/auth/logout', checkAuth ,async (req, res) => {
+    try{
+        res.clearCookie('jwt')
+        res.status(200).json({
+            message: 'Logged out'
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed.',
+            error: 'Not authorized.'
+        })
+    }
+})
+
 app.listen(4444, (e) => {
     if(e){
         return console.log(e)
