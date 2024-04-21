@@ -35,7 +35,7 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(cors({
-    origin: 'https://joints-front.vercel.app',
+    origin: ['http://localhost:5173', 'https://joints-front.vercel.app'],
     credentials: true,
 }));
 
