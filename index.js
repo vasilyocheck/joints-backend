@@ -9,7 +9,7 @@ import bcrypt from "bcrypt";
 import checkAuth from "./utils/checkAuth.js";
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import {signUp} from "./controllers/user-controller.js";
+import {authMe, login, logout, signUp} from "./controllers/user-controller.js";
 
 const app = express();
 dotenv.config();
@@ -47,79 +47,11 @@ app.get('/', (req, res) => {
 app.post('/auth/signup', ...validateSignUp, signUp)
 
 
-app.post('/auth/login', async (req, res) => {
-    try {
-        const user = await UserModel.findOne({email: req.body.email})
-        if(!user) {
-            return res.status(404).json({
-                message: 'User not found'
-            })
-        }
+app.post('/auth/login', login)
 
-        const isPassValid = await bcrypt.compare(req.body.password, user._doc.passwordHash)
-        if(!isPassValid){
-            return res.status(400).json({
-                message: 'Invalid login or password.'
-            })
-        }
-        const token = jwt.sign({
-                _id: user._id,
-            }, process.env.SECRET,
-            {
-                expiresIn: process.env.JWT_EXPIRATION,
-            })
+app.get('/auth/me', checkAuth ,authMe)
 
-        const { passwordHash, ...userData } = user._doc
-
-        res.cookie('jwt', JSON.stringify(token))
-        return res.json({...userData, token})
-
-    } catch(e) {
-        console.log(e)
-        res.status(500).json({
-            message: 'Failed',
-            error: 'Failed to log in.'
-        })
-    }
-})
-
-app.get('/auth/me', checkAuth ,async (req, res) => {
-    try {
-        const user = await UserModel.findById(req.userId)
-        console.log(req.userId)
-        if(!user) {
-            return res.status(404).json({
-                message: 'User not found'
-            })
-        }
-
-        const { passwordHash, ...userWithoutPassHash } = user._doc
-
-        res.send(userWithoutPassHash)
-    } catch (e) {
-        console.log(e)
-        res.status(500).json({
-            message: 'Failed.',
-            error: 'Not authorized.'
-        })
-
-    }
-})
-
-app.get('/auth/logout', checkAuth ,async (req, res) => {
-    try{
-        res.clearCookie('jwt')
-        res.status(200).json({
-            message: 'Logged out'
-        })
-    } catch (e) {
-        console.log(e)
-        res.status(500).json({
-            message: 'Failed.',
-            error: 'Not authorized.'
-        })
-    }
-})
+app.get('/auth/logout', checkAuth, logout)
 
 app.listen(4444, (e) => {
     if(e){

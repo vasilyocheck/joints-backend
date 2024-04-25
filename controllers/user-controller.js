@@ -40,3 +40,76 @@ export const signUp = async (req, res) => {
 
     }
 }
+
+export const login = async (req, res) => {
+    try {
+        const user = await UserModel.findOne({email: req.body.email})
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+        const isPassValid = await bcrypt.compare(req.body.password, user._doc.passwordHash)
+        if(!isPassValid){
+            return res.status(400).json({
+                message: 'Invalid login or password.'
+            })
+        }
+        const token = jwt.sign({
+                _id: user._id,
+            }, process.env.SECRET,
+            {
+                expiresIn: process.env.JWT_EXPIRATION,
+            })
+
+        const { passwordHash, ...userData } = user._doc
+
+        res.cookie('jwt', JSON.stringify(token))
+        return res.json({...userData, token})
+
+    } catch(e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed',
+            error: 'Failed to log in.'
+        })
+    }
+}
+
+export const authMe = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId)
+        if(!user) {
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+        const { passwordHash, ...userWithoutPassHash } = user._doc
+
+        res.send(userWithoutPassHash)
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed.',
+            error: 'Not authorized.'
+        })
+
+    }
+}
+
+export const logout = async (req, res) => {
+    try{
+        res.clearCookie('jwt')
+        res.status(200).json({
+            message: 'Logged out'
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed.',
+            error: 'Not authorized.'
+        })
+    }
+}
