@@ -6,6 +6,7 @@ import checkAuth from "./utils/checkAuth.js";
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import {authMe, login, logout, signUp} from "./controllers/user-controller.js";
+import {createProduct, getAllProducts, getProductById} from "./controllers/product-controller.js";
 
 const app = express();
 dotenv.config();
@@ -48,6 +49,14 @@ app.post('/auth/login', login)
 app.get('/auth/me', checkAuth ,authMe)
 
 app.get('/auth/logout', checkAuth, logout)
+
+app.post('/products', checkAuth, createProduct)
+
+app.get('/products', checkAuth, getAllProducts)
+
+app.get('/products/:id', checkAuth, getProductById)
+
+
 
 app.listen(4444, (e) => {
     if(e){
