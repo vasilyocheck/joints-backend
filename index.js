@@ -106,14 +106,6 @@ app.post('/auth/login', async (req, res) => {
 
         const { passwordHash, ...userData } = user._doc
 
-        /*const cookieOptions = {
-            httpOnly: true,
-            sameSite: 'none',
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            domain: 'https://joints-front.vercel.app',
-        }
-
-        res.cookie('jwt', token )*/
         res.cookie('jwt', JSON.stringify(token))
         return res.json({...userData, token})
 
