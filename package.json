@@ -12,7 +12,7 @@
   "keywords": [
     "joints"
   ],
-  "author": "Vaily Medvedev",
+  "author": "Vasily Medvedev",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

@@ -56,3 +56,26 @@ export const getProductById = async (req, res) => {
         })
     }
 }
+
+export const removeProduct = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const doc = await ProductModel.findOneAndDelete(
+            {_id: postId},
+            {returnDocument: "after"}
+        )
+        if(!doc) {
+            return res.status(404).json({
+                message: 'Product not found'
+            })
+        }
+        res.json({
+            success: true,
+        })
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed to delete the product.',
+        })
+    }
+}
