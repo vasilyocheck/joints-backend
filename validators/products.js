@@ -1,16 +1,16 @@
-import {body} from "express-validator";
+import {query} from "express-validator";
 
 export const validateProduct = [
-    body('area').optional().isNumeric(),
-    body('category').isString(),
-    body('code').isString(),
-    body('isWeight').isString(),
-    body('isWeightAllowed').isString(),
-    body('length').optional().isNumeric(),
-    body('name').isString(),
-    body('unit').isString(),
-    body('volume').optional().isNumeric(),
-    body('weight').optional().isNumeric(),
-    body('weightDivider').optional().isNumeric(),
-    body('weightUnit').optional().isString()
+    query('area').optional().isNumeric(),
+    query('category').isString(),
+    query('code').isString(),
+    query('isWeight').isString(),
+    query('isWeightAllowed').isString(),
+    query('length').optional().isNumeric(),
+    query('name').isString(),
+    query('unit').isString(),
+    query('volume').optional().isNumeric(),
+    query('weight').optional().isNumeric(),
+    query('weightDivider').optional().isNumeric(),
+    query('weightUnit').optional().isString()
 ];

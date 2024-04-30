@@ -15,6 +15,9 @@ export const createProduct = async (req, res) => {
             weight: req.body.weight,
             weightDivider: req.body.weightDivider,
             weightUnit: req.body.weightUnit,
+            calcUnit: req.body.calcUnit,
+            calcUnitWeight: req.body.calcUnitWeight,
+            calcUnitVolume: req.body.calcUnitVolume,
         })
         const product = await doc.save();
         res.json(product);
@@ -107,6 +110,9 @@ export const updateProduct = async (req, res) => {
                 weight: req.body.weight,
                 weightDivider: req.body.weightDivider,
                 weightUnit: req.body.weightUnit,
+                calcUnit: req.body.calcUnit,
+                calcUnitWeight: req.body.calcUnitWeight,
+                calcUnitVolume: req.body.calcUnitVolume,
             },
             { returnDocument: "after" }
         )

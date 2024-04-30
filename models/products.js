@@ -48,6 +48,18 @@ const ProductModel = new mongoose.Schema({
     weightUnit: {
         type: String,
         required: false,
+    },
+    calcUnit: {
+        type: String,
+        required: true,
+    },
+    calcUnitWeight: {
+        type: Number,
+        required: true,
+    },
+    calcUnitVolume: {
+        type: Number,
+        required: true,
     }
 },  {
     timestamps: true
