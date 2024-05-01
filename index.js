@@ -9,7 +9,7 @@ import {authMe, login, logout, signUp} from "./controllers/user-controller.js";
 import {
     createProduct,
     getAllProducts,
-    getProductById,
+    getProductById, getSeveralProducts,
     removeProduct,
     updateProduct
 } from "./controllers/product-controller.js";
@@ -65,6 +65,8 @@ app.get('/products/:id', checkAuth, getProductById)
 app.delete('/products/:id', checkAuth, removeProduct)
 
 app.put('/products/:id', checkAuth, updateProduct)
+
+app.post('/products/several', checkAuth, getSeveralProducts)
 
 
 app.listen(4444, (e) => {

@@ -129,3 +129,28 @@ export const updateProduct = async (req, res) => {
         })
     }
 }
+
+export const getSeveralProducts = async (req, res) => {
+    try{
+        const products = req.body
+        if(!products) { return res.status(404).json({
+            message: 'No products found with the requested parameters.',
+        })}
+        const productsArr = []
+        let currentProducts = await ProductModel.find({})
+        for(let i = 0; i < products.length; i++) {
+            const {name, amount} = products[i]
+            const currentProduct = currentProducts.find(p => p.name === name)
+            const currentWeight = amount * currentProduct.calcUnitWeight
+            const currentVolume = amount * currentProduct.calcUnitVolume
+            productsArr.push({...currentProduct._doc, totalWeight: currentWeight, totalVolume: currentVolume })
+        }
+
+        res.status(200).json(productsArr)
+    } catch (e) {
+        console.log(e)
+        res.status(500).json({
+            message: 'Failed to get the requested products.',
+        })
+    }
+}
