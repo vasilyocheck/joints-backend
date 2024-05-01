@@ -143,7 +143,7 @@ export const getSeveralProducts = async (req, res) => {
             const currentProduct = currentProducts.find(p => name.startsWith(p.name))
             const currentWeight = amount * currentProduct.calcUnitWeight
             const currentVolume = amount * currentProduct.calcUnitVolume
-            productsArr.push({...currentProduct._doc, totalWeight: currentWeight, totalVolume: currentVolume })
+            productsArr.push({...currentProduct._doc, totalWeight: currentWeight, totalVolume: currentVolume, amount })
         }
 
         res.status(200).json(productsArr)
