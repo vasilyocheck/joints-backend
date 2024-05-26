@@ -13,6 +13,8 @@ import {
     removeProduct,
     updateProduct
 } from "./controllers/product-controller.js";
+import joints from "./models/joints.js";
+import {createJoint, getJoints} from "./controllers/joints-controller.js";
 
 const app = express();
 dotenv.config();
@@ -67,6 +69,10 @@ app.delete('/products/:id', checkAuth, removeProduct)
 app.put('/products/:id', checkAuth, updateProduct)
 
 app.post('/products/several', checkAuth, getSeveralProducts)
+
+app.post('/joints', checkAuth, createJoint)
+
+app.get('/joints', checkAuth, getJoints)
 
 
 app.listen(4444, (e) => {
