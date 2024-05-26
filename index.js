@@ -9,11 +9,11 @@ import {authMe, login, logout, signUp} from "./controllers/user-controller.js";
 import {
     createProduct,
     getAllProducts,
-    getProductById, getSeveralProducts,
+    getProductById,
+    getSeveralProducts,
     removeProduct,
     updateProduct
 } from "./controllers/product-controller.js";
-import joints from "./models/joints.js";
 import {createJoint, getJoints} from "./controllers/joints-controller.js";
 
 const app = express();
