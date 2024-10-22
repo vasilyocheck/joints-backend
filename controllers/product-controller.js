@@ -95,6 +95,7 @@ export const removeProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const postId = req.params.id
+        console.log(postId)
         const doc = await ProductModel.findByIdAndUpdate(
             {_id: postId},
             {
