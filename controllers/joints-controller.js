@@ -13,7 +13,6 @@ export const createJoint = async (req, res) => {
             isOutsideOk: req.body.isOutsideOk,
             corner: req.body.corner,
         })
-        console.log(doc)
         const joint = await doc.save()
         res.json(joint)
     } catch (e) {
