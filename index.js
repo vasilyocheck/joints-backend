@@ -15,7 +15,7 @@ import {
     updateProduct
 } from "./controllers/product-controller.js";
 import {createJoint, getJoints} from "./controllers/joints-controller.js";
-import {createEcorasterItem, updateEcorasterItem} from "./controllers/ecoraster-controller.js";
+import {createEcorasterItem, getEcorasterItems, updateEcorasterItem} from "./controllers/ecoraster-controller.js";
 
 const app = express();
 dotenv.config();
@@ -75,6 +75,7 @@ app.post('/joints', checkAuth, createJoint)
 
 app.get('/joints', checkAuth, getJoints)
 
+app.get('/ecoraster', checkAuth, getEcorasterItems)
 app.post('/ecoraster', checkAuth, createEcorasterItem)
 app.put('/ecoraster/:id', checkAuth, updateEcorasterItem)
 

@@ -52,3 +52,14 @@ export const updateEcorasterItem = async (req, res) => {
         })
     }
 }
+
+export const getEcorasterItems = async (req, res) => {
+    try {
+        const ecorasterItems = await EcorasterModel.find()
+        res.status(200).json(ecorasterItems)
+    } catch (e) {
+        res.json({
+            message: 'Failed to get ecoraster items.',
+        })
+    }
+}
