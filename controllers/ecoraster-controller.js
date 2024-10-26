@@ -10,6 +10,7 @@ export const createEcorasterItem = async(req, res) => {
             palletWeight: req.body.palletWeight,
             amountOnPallet: req.body.amountOnPallet,
             volumeOfPallets: req.body.volumeOfPallets,
+            multiplicity: req.body.multiplicity,
         })
         const ecorasterUnit = await doc.save();
         res.json(ecorasterUnit);
@@ -31,6 +32,7 @@ export const updateEcorasterItem = async (req, res) => {
                 units: req.body.units,
                 prices: req.body.prices,
                 minOrderAmount: req.body.minOrderAmount,
+                multiplicity: req.body.multiplicity,
                 palletWeight: req.body.palletWeight,
                 amountOnPallet: req.body.amountOnPallet,
                 volumeOfPallets: req.body.volumeOfPallets,
