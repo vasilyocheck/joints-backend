@@ -2,6 +2,10 @@ import EcorasterModel from "../models/ecoraster.js";
 
 export const createEcorasterItem = async(req, res) => {
     try{
+        const unit = EcorasterModel.findOne({name: req.body.name})
+        if(unit) {
+            return res.status(400).json({error: "Ecoraster item with such name already exists"})
+        }
         const doc = new EcorasterModel({
             name: req.body.name,
             units: req.body.units,
@@ -12,6 +16,7 @@ export const createEcorasterItem = async(req, res) => {
             volumeOfPallets: req.body.volumeOfPallets,
             multiplicity: req.body.multiplicity,
         })
+
         const ecorasterUnit = await doc.save();
         res.json(ecorasterUnit);
     } catch (e) {
