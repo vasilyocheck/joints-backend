@@ -2,7 +2,7 @@ import EcorasterModel from "../models/ecoraster.js";
 
 export const createEcorasterItem = async(req, res) => {
     try{
-        const unit = EcorasterModel.findOne({name: req.body.name})
+        const unit = await EcorasterModel.find({name: req.body.name})
         if(unit) {
             return res.status(400).json({error: "Ecoraster item with such name already exists"})
         }
