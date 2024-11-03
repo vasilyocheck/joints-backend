@@ -119,7 +119,7 @@ export const updateProduct = async (req, res) => {
         )
         if(!doc) {
             return res.status(404).json({
-                message: 'Product not found'
+                message: 'Product not updated'
             })
         }
         res.status(200).json({doc})

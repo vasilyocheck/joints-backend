@@ -5,7 +5,7 @@ import {validateSignUp} from "./validators/auth.js";
 import checkAuth from "./utils/checkAuth.js";
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import {authMe, login, logout, signUp} from "./controllers/user-controller.js";
+import {authMe, changePassword, login, logout, signUp} from "./controllers/user-controller.js";
 import {
     createProduct,
     getAllProducts,
@@ -58,6 +58,7 @@ app.post('/auth/login', login)
 app.get('/auth/me', checkAuth ,authMe)
 
 app.get('/auth/logout', checkAuth, logout)
+app.put('/auth/changePassword', checkAuth, changePassword)
 
 app.post('/products', checkAuth, createProduct)
 
