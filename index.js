@@ -14,8 +14,9 @@ import {
     removeProduct,
     updateProduct
 } from "./controllers/product-controller.js";
-import {createJoint, getJoints} from "./controllers/joints-controller.js";
+import {addJointPart, createJoint, getJoints} from "./controllers/joints-controller.js";
 import {createEcorasterItem, getEcorasterItems, updateEcorasterItem} from "./controllers/ecoraster-controller.js";
+import {addNewMeasurementUnit, getMeasurementUnits} from "./controllers/measurement-unit-controller.js";
 
 const app = express();
 dotenv.config();
@@ -79,6 +80,11 @@ app.get('/joints', checkAuth, getJoints)
 app.get('/ecoraster', checkAuth, getEcorasterItems)
 app.post('/ecoraster', checkAuth, createEcorasterItem)
 app.put('/ecoraster/:id', checkAuth, updateEcorasterItem)
+
+app.post('/measurement-units-reference', checkAuth, addNewMeasurementUnit)
+app.get('/measurement-units-reference', checkAuth, getMeasurementUnits)
+
+app.post('/joints/parts', checkAuth, addJointPart)
 
 
 app.listen(4444, (e) => {
