@@ -23,15 +23,17 @@ export const addNewMeasurementUnit = async (req, res) => {
 export const getMeasurementUnits = async (req, res) => {
     const { unitName } = req.query;
     try{
+        if(!unitName) {
+            const allMeasurementUnits = await MeasurementUnitsReferenceModel.find();
+            return res.status(200).send(allMeasurementUnits);
+        }
         if(unitName) {
             const measurementUnits = await MeasurementUnitsReferenceModel.find({ unitName: { $regex: new RegExp(unitName, 'i') } });
             if (!measurementUnits) { return res.status(404).json({message: 'No measurement found with the requested parameters.'}); }
             return res.status(200).json(measurementUnits);
         }
 
-        return res.json({
-            message: 'No measurement units found with the requested parameters.',
-        })
+        return res.json([])
     } catch (e) {
         console.error(e);
         return res.status(500).send({error: e});
