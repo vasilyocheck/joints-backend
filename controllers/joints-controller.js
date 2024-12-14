@@ -33,12 +33,3 @@ export const getJoints = async (req, res) => {
         })
     }
 }
-
-export const addJointPart = async (req, res) => {
-    try{
-        return res.status(200).json({success: true})
-    } catch (e) {
-        console.log(e)
-        res.status(500).json({error: 'Failed to add part'})
-    }
-}
