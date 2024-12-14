@@ -1,6 +1,12 @@
 import JointsPartModel from '../models/joints-parts.js';
 import dotenv from 'dotenv';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import { JOINTS_PARTS_IMAGE_BASE_PATH } from '../constants/constants.js';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -19,6 +25,9 @@ const s3 = new S3Client({
   endpoint: endpoint,
 });
 
+const randomImageName = (bytes = 32) =>
+  crypto.randomBytes(bytes).toString('hex');
+
 export const addJointsPart = async (req, res) => {
   const {
     brand,
@@ -31,7 +40,12 @@ export const addJointsPart = async (req, res) => {
     isCompensator,
   } = req.body;
   try {
-    const imageURL = `pgk/images/joints-parts/${units}`;
+    const existingPart = await JointsPartModel.findOne({ partName });
+    if (existingPart) {
+      return res.status(400).json({ message: 'Such part already exists' });
+    }
+
+    const imageURL = JOINTS_PARTS_IMAGE_BASE_PATH + randomImageName();
     const params = {
       Bucket: bucketName,
       Key: imageURL,
@@ -41,6 +55,17 @@ export const addJointsPart = async (req, res) => {
 
     const command = new PutObjectCommand(params);
     await s3.send(command);
+
+    /* const imageURL = JOINTS_PARTS_IMAGE_BASE_PATH + units;
+    const params = {
+      Bucket: bucketName,
+      Key: imageURL,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3.send(command);*/
 
     const jointsPartWithImageURL = {
       brand,
@@ -57,22 +82,76 @@ export const addJointsPart = async (req, res) => {
     const newJointsPart = await JointsPartModel.create(jointsPartWithImageURL);
     await newJointsPart.save();
 
-    const savedJointPart = await JointsPartModel.findOne({
+    const savedJointsPart = await JointsPartModel.findOne({
       _id: newJointsPart._id,
     })
       .populate('units')
       .exec();
-    /*const newJointPart = await JointsPartModel.create({ ...jointPart });
 
-    await newJointPart.save();
+    return res.status(200).json(savedJointsPart);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e });
+  }
+};
 
-    const savedJointPart = await JointsPartModel.findOne({
-      _id: newJointPart._id,
+export const getJointsParts = async (req, res) => {
+  const { searchName } = req.query;
+  try {
+    if (!searchName) {
+      const allJointsParts = await JointsPartModel.find()
+        .populate('units')
+        .exec();
+      return res.status(200).json(allJointsParts);
+    }
+    const jointsPartsFilteredBySearchName = await JointsPartModel.find({
+      partName: { $regex: new RegExp(searchName, 'i') },
     })
       .populate('units')
-      .exec();*/
+      .exec();
+    return res.status(200).json(jointsPartsFilteredBySearchName);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e });
+  }
+};
 
-    return res.status(200).json(savedJointPart);
+export const deleteJointsPart = async (req, res) => {
+  const { partId } = req.params;
+  try {
+    const jointsPart = await JointsPartModel.findOne({
+      _id: partId,
+    })
+      .populate('units')
+      .exec();
+
+    if (!jointsPart) {
+      return res
+        .status(404)
+        .json({ message: 'No joints part with the requested id found.' });
+    }
+    const edgeIndexImageURL = `${endpoint}/${bucketName}/`.length;
+    const imageURL = jointsPart.imageURL.slice(edgeIndexImageURL);
+
+    const params = {
+      Bucket: bucketName,
+      Key: imageURL,
+    };
+
+    const command = new DeleteObjectCommand(params);
+    await s3.send(command);
+
+    const deletedJointsPart = await JointsPartModel.findByIdAndDelete({
+      _id: partId,
+    });
+
+    if (!deletedJointsPart) {
+      return res
+        .status(404)
+        .json({ message: 'No joints part with the requested id found.' });
+    }
+
+    return res.status(200).json({ status: 'success' });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: e });

@@ -31,7 +31,11 @@ import {
   addNewMeasurementUnit,
   getMeasurementUnits,
 } from './controllers/measurement-unit-controller.js';
-import { addJointsPart } from './controllers/joints-parts-controller.js';
+import {
+  addJointsPart,
+  deleteJointsPart,
+  getJointsParts,
+} from './controllers/joints-parts-controller.js';
 import multer from 'multer';
 
 const app = express();
@@ -112,6 +116,8 @@ app.post('/measurement-units-reference', checkAuth, addNewMeasurementUnit);
 app.get('/measurement-units-reference', checkAuth, getMeasurementUnits);
 
 app.post('/joints/parts', checkAuth, upload.single('file'), addJointsPart);
+app.get('/joints/parts', checkAuth, getJointsParts);
+app.delete('/joints/parts/:partId', checkAuth, deleteJointsPart);
 
 app.listen(4444, (e) => {
   if (e) {
