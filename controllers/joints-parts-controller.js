@@ -157,3 +157,53 @@ export const deleteJointsPart = async (req, res) => {
     return res.status(500).json({ message: e });
   }
 };
+
+export const updateJointsPart = async (req, res) => {
+  const { partId } = req.params;
+  const {
+    brand,
+    partName,
+    divisibility,
+    packQuantity,
+    units,
+    unitWeightKg,
+    unitVolumeM3,
+    isCompensator,
+  } = req.body;
+  try {
+    const jointsPart = await JointsPartModel.findOne({
+      _id: partId,
+    });
+
+    const imageURL = jointsPart.imageURL;
+    const updatedJointsPart = await JointsPartModel.findByIdAndUpdate(
+      {
+        _id: partId,
+      },
+      {
+        brand,
+        partName,
+        divisibility,
+        packQuantity,
+        units,
+        unitWeightKg,
+        unitVolumeM3,
+        isCompensator,
+        imageURL,
+      },
+      {
+        returnDocument: 'after',
+      },
+    );
+    if (!updatedJointsPart) {
+      return res
+        .status(400)
+        .json({ message: 'No joints part with the requested id found.' });
+    }
+
+    return res.status(200).json({ updatedJointsPart });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: 'Failed to update joints part' });
+  }
+};

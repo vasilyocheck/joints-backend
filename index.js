@@ -35,6 +35,7 @@ import {
   addJointsPart,
   deleteJointsPart,
   getJointsParts,
+  updateJointsPart,
 } from './controllers/joints-parts-controller.js';
 import multer from 'multer';
 
@@ -117,6 +118,7 @@ app.get('/measurement-units-reference', checkAuth, getMeasurementUnits);
 
 app.post('/joints/parts', checkAuth, upload.single('file'), addJointsPart);
 app.get('/joints/parts', checkAuth, getJointsParts);
+app.put('/joints/parts/:partId', checkAuth, updateJointsPart);
 app.delete('/joints/parts/:partId', checkAuth, deleteJointsPart);
 
 app.listen(4444, (e) => {
