@@ -56,17 +56,6 @@ export const addJointsPart = async (req, res) => {
     const command = new PutObjectCommand(params);
     await s3.send(command);
 
-    /* const imageURL = JOINTS_PARTS_IMAGE_BASE_PATH + units;
-    const params = {
-      Bucket: bucketName,
-      Key: imageURL,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
-    };
-
-    const command = new PutObjectCommand(params);
-    await s3.send(command);*/
-
     const jointsPartWithImageURL = {
       brand,
       partName,
@@ -205,5 +194,45 @@ export const updateJointsPart = async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: 'Failed to update joints part' });
+  }
+};
+
+export const updateJointsPartImage = async (req, res) => {
+  const { partId } = req.params;
+  try {
+    const updatedJointsPart = await JointsPartModel.findOne({
+      _id: partId,
+    });
+    const imageUrlToDelete = updatedJointsPart.imageURL;
+
+    const edgeIndexImageURL = `${endpoint}/${bucketName}/`.length;
+    const imageURLtoDelete = imageUrlToDelete.slice(edgeIndexImageURL);
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: imageURLtoDelete,
+    };
+
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+
+    const updatedImageURL = JOINTS_PARTS_IMAGE_BASE_PATH + randomImageName();
+    const updatedParams = {
+      Bucket: bucketName,
+      Key: updatedImageURL,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    const updateCommand = new PutObjectCommand(updatedParams);
+
+    await Promise.all([s3.send(deleteCommand), s3.send(updateCommand)]);
+
+    updatedJointsPart.imageURL = `${endpoint}/${bucketName}/${updatedImageURL}`;
+    await updatedJointsPart.save();
+
+    return res.status(200).json(updatedJointsPart);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: e });
   }
 };

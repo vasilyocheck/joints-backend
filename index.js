@@ -36,6 +36,7 @@ import {
   deleteJointsPart,
   getJointsParts,
   updateJointsPart,
+  updateJointsPartImage,
 } from './controllers/joints-parts-controller.js';
 import multer from 'multer';
 
@@ -120,6 +121,12 @@ app.post('/joints/parts', checkAuth, upload.single('file'), addJointsPart);
 app.get('/joints/parts', checkAuth, getJointsParts);
 app.put('/joints/parts/:partId', checkAuth, updateJointsPart);
 app.delete('/joints/parts/:partId', checkAuth, deleteJointsPart);
+app.patch(
+  '/joints/parts/:partId/image',
+  checkAuth,
+  upload.single('file'),
+  updateJointsPartImage,
+);
 
 app.listen(4444, (e) => {
   if (e) {
