@@ -64,7 +64,7 @@ export const addJointsPart = async (req, res) => {
       units,
       unitWeightKg: Number(unitWeightKg),
       unitVolumeM3: Number(unitVolumeM3),
-      isCompensator: Boolean(isCompensator),
+      isCompensator: JSON.parse(isCompensator),
       imageURL: `${endpoint}/${bucketName}/${imageURL}`,
     };
 
