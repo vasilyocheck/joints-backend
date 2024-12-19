@@ -39,6 +39,10 @@ import {
   updateJointsPartImage,
 } from './controllers/joints-parts-controller.js';
 import multer from 'multer';
+import {
+  addExpansionJoint,
+  getExpansionJoints,
+} from './controllers/expansion-joints-controller.js';
 
 const app = express();
 
@@ -127,6 +131,15 @@ app.patch(
   upload.single('file'),
   updateJointsPartImage,
 );
+
+app.post(
+  '/joints/expansion-joints',
+  checkAuth,
+  upload.fields([{ name: 'image' }, { name: 'scheme' }, { name: 'drawing' }]),
+  addExpansionJoint,
+);
+
+app.get('/joints/expansion-joints', checkAuth, getExpansionJoints);
 
 app.listen(4444, (e) => {
   if (e) {
