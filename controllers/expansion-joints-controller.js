@@ -1,5 +1,9 @@
 import ExpansionJointModel from '../models/expansion-joints.js';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import crypto from 'crypto';
 import { EXPANSION_JOINTS_IMAGES_BASE_PATH } from '../constants/constants.js';
 
@@ -149,5 +153,47 @@ export const getExpansionJoints = async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).send({ message: e.message });
+  }
+};
+
+export const deleteExpansionJoint = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const expansionJoint = await ExpansionJointModel.findById(id);
+    if (!expansionJoint) {
+      return res.status(404).json({ message: 'Expansion joint not found' });
+    }
+
+    const imageKeys = [
+      expansionJoint.image.split(`${endpoint}/${bucketName}/`)[1],
+      expansionJoint.drawing.split(`${endpoint}/${bucketName}/`)[1],
+      expansionJoint.scheme.split(`${endpoint}/${bucketName}/`)[1],
+    ];
+
+    const deleteCommands = imageKeys.map((key) => {
+      return new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+    });
+
+    await Promise.all(deleteCommands.map((command) => s3.send(command)))
+      .then(() => {
+        console.log('Files deleted successfully.');
+      })
+      .catch((err) => {
+        console.error('Error deleting files from S3:', err);
+        return res.status(500).send('Error deleting files from S3.');
+      });
+
+    await ExpansionJointModel.findByIdAndDelete(id);
+
+    return res.send({
+      message: 'Expansion joint has been deleted successfully.',
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send({ message: e.message });
   }
 };

@@ -41,6 +41,7 @@ import {
 import multer from 'multer';
 import {
   addExpansionJoint,
+  deleteExpansionJoint,
   getExpansionJoints,
 } from './controllers/expansion-joints-controller.js';
 
@@ -140,6 +141,7 @@ app.post(
 );
 
 app.get('/joints/expansion-joints', checkAuth, getExpansionJoints);
+app.delete('/joints/expansion-joints/:id', checkAuth, deleteExpansionJoint);
 
 app.listen(4444, (e) => {
   if (e) {
