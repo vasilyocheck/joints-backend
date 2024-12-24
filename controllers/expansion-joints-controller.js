@@ -197,3 +197,45 @@ export const deleteExpansionJoint = async (req, res) => {
     return res.status(400).send({ message: e.message });
   }
 };
+
+export const updateExpansionJointImage = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { title } = req.body;
+    const updatedExpansionJoint = await ExpansionJointModel.findOne({
+      _id: id,
+    });
+    const imageURLToDelete = updatedExpansionJoint[title];
+
+    const edgeIndexImageURL = `${endpoint}/${bucketName}/`.length;
+    const imageBucketKey = imageURLToDelete.slice(edgeIndexImageURL);
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: imageBucketKey,
+    };
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+
+    const updatedImageURL = `${EXPANSION_JOINTS_IMAGES_BASE_PATH + title + 's'}/${randomImageName()}`;
+
+    const updateParams = {
+      Bucket: bucketName,
+      Key: updatedImageURL,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    const updateCommand = new PutObjectCommand(updateParams);
+
+    await Promise.all([s3.send(deleteCommand), s3.send(updateCommand)]);
+
+    updatedExpansionJoint[title] =
+      `${endpoint}/${bucketName}/${updatedImageURL}`;
+    await updatedExpansionJoint.save();
+
+    return res.send(updatedExpansionJoint);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send({ message: e.message });
+  }
+};

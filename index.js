@@ -43,6 +43,7 @@ import {
   addExpansionJoint,
   deleteExpansionJoint,
   getExpansionJoints,
+  updateExpansionJointImage,
 } from './controllers/expansion-joints-controller.js';
 
 const app = express();
@@ -142,6 +143,12 @@ app.post(
 
 app.get('/joints/expansion-joints', checkAuth, getExpansionJoints);
 app.delete('/joints/expansion-joints/:id', checkAuth, deleteExpansionJoint);
+app.put(
+  '/joints/expansion-joints/:id',
+  checkAuth,
+  upload.single('file'),
+  updateExpansionJointImage,
+);
 
 app.listen(4444, (e) => {
   if (e) {
