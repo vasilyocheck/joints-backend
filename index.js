@@ -44,6 +44,7 @@ import {
   deleteExpansionJoint,
   getExpansionJoints,
   updateExpansionJointImage,
+  updateExpansionJointParams,
 } from './controllers/expansion-joints-controller.js';
 
 const app = express();
@@ -148,6 +149,11 @@ app.put(
   checkAuth,
   upload.single('file'),
   updateExpansionJointImage,
+);
+app.put(
+  '/joints/expansion-joints/:id/joint-params',
+  checkAuth,
+  updateExpansionJointParams,
 );
 
 app.listen(4444, (e) => {

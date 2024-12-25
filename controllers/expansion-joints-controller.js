@@ -239,3 +239,38 @@ export const updateExpansionJointImage = async (req, res) => {
     return res.status(400).send({ message: e.message });
   }
 };
+
+export const updateExpansionJointParams = async (req, res) => {
+  const { id } = req.params;
+  const { brand, divisibility, isJoint, jointName, params, parts, units } =
+    req.body;
+  try {
+    const updatedExpansionJoint = await ExpansionJointModel.findByIdAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        brand,
+        divisibility,
+        units,
+        parts,
+        isJoint,
+        jointName,
+        params,
+      },
+      {
+        returnDocument: 'after',
+      },
+    );
+    if (!updatedExpansionJoint) {
+      return res
+        .status(404)
+        .send({ message: 'Failed to update the selected expansion joint' });
+    }
+
+    return res.status(200).json(updatedExpansionJoint);
+  } catch (e) {
+    console.error(e);
+    return res.status(400).send({ message: e.message });
+  }
+};
