@@ -137,6 +137,13 @@ export const getExpansionJoints = async (req, res) => {
         path: 'parts.part',
         model: 'JointsPart',
       })
+      .populate({
+        path: 'parts.part',
+        populate: {
+          path: 'units',
+          model: 'MeasurementUnitsReference',
+        },
+      })
       .skip(skip)
       .limit(parseInt(limit, 10))
       .exec();
