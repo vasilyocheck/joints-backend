@@ -46,6 +46,11 @@ import {
   updateExpansionJointImage,
   updateExpansionJointParams,
 } from './controllers/expansion-joints-controller.js';
+import {
+  addWaterstopComponent,
+  deleteWaterstopsComponent,
+  getWaterstopsComponents,
+} from './controllers/waterstops/components-controller.js';
 
 const app = express();
 
@@ -154,6 +159,19 @@ app.put(
   '/joints/expansion-joints/:id/joint-params',
   checkAuth,
   updateExpansionJointParams,
+);
+
+app.post(
+  '/waterstops/components',
+  checkAuth,
+  upload.single('file'),
+  addWaterstopComponent,
+);
+app.get('/waterstops/components', checkAuth, getWaterstopsComponents);
+app.delete(
+  '/waterstops/components/:componentId',
+  checkAuth,
+  deleteWaterstopsComponent,
 );
 
 app.listen(4444, (e) => {
