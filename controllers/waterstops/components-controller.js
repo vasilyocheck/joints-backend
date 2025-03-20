@@ -6,10 +6,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import WaterstopComponentModel from '../../models/waterstops/components.js';
-import {
-  JOINTS_PARTS_IMAGE_BASE_PATH,
-  WATERSTOPS_COMPONENTS_BASE_PATH,
-} from '../../constants/constants.js';
+import { WATERSTOPS_COMPONENTS_BASE_PATH } from '../../constants/constants.js';
 
 dotenv.config();
 
