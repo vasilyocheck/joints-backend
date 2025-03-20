@@ -50,6 +50,8 @@ import {
   addWaterstopComponent,
   deleteWaterstopsComponent,
   getWaterstopsComponents,
+  updateWaterstopComponentImage,
+  updateWaterstopsComponent,
 } from './controllers/waterstops/components-controller.js';
 
 const app = express();
@@ -172,6 +174,18 @@ app.delete(
   '/waterstops/components/:componentId',
   checkAuth,
   deleteWaterstopsComponent,
+);
+app.put(
+  '/waterstops/components/:componentId/info',
+  checkAuth,
+  updateWaterstopsComponent,
+);
+
+app.put(
+  '/waterstops/components/:componentId/image',
+  checkAuth,
+  upload.single('file'),
+  updateWaterstopComponentImage,
 );
 
 app.listen(4444, (e) => {

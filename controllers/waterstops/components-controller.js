@@ -6,7 +6,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import WaterstopComponentModel from '../../models/waterstops/components.js';
-import { WATERSTOPS_COMPONENTS_BASE_PATH } from '../../constants/constants.js';
+import {
+  JOINTS_PARTS_IMAGE_BASE_PATH,
+  WATERSTOPS_COMPONENTS_BASE_PATH,
+} from '../../constants/constants.js';
 
 dotenv.config();
 
@@ -118,6 +121,89 @@ export const deleteWaterstopsComponent = async (req, res) => {
     }
 
     return res.status(200).json({ status: 'success' });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e });
+  }
+};
+
+export const updateWaterstopsComponent = async (req, res) => {
+  const { componentId } = req.params;
+
+  const { name, volume, weight } = req.body;
+  try {
+    const component = await WaterstopComponentModel.findOne({
+      _id: componentId,
+    });
+    if (!component) {
+      return res.status(404).json({
+        message: 'No waterstop component with the requested id found.',
+      });
+    }
+    const imageURL = component.imageURL;
+    const updatedComponent = await WaterstopComponentModel.findOneAndUpdate(
+      {
+        _id: componentId,
+      },
+      {
+        imageURL,
+        name,
+        volume,
+        weight,
+      },
+      {
+        returnDocument: 'after',
+      },
+    );
+    if (!updatedComponent) {
+      return res.status(404).json({
+        message: 'No waterstop component with the requested id found.',
+      });
+    }
+    return res.status(200).json(updatedComponent);
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: e });
+  }
+};
+
+export const updateWaterstopComponentImage = async (req, res) => {
+  const { componentId } = req.params;
+  try {
+    const updatedComponent = await WaterstopComponentModel.findOne({
+      _id: componentId,
+    });
+    if (!updatedComponent) {
+      return res.status(404).json({
+        message: 'No waterstop component with the requested id found.',
+      });
+    }
+
+    const edgeIndexImageURL = `${endpoint}/${bucketName}/`.length;
+    const imageURLtoDelete = updatedComponent.imageURL.slice(edgeIndexImageURL);
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Key: imageURLtoDelete,
+    };
+
+    const deleteCommand = new DeleteObjectCommand(deleteParams);
+
+    const updatedImageURL = WATERSTOPS_COMPONENTS_BASE_PATH + randomImageName();
+    const updatedParams = {
+      Bucket: bucketName,
+      Key: updatedImageURL,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    const updateCommand = new PutObjectCommand(updatedParams);
+    await Promise.all([s3.send(deleteCommand), s3.send(updateCommand)]);
+
+    updatedComponent.imageURL = `${endpoint}/${bucketName}/${updatedImageURL}`;
+    await updatedComponent.save();
+
+    return res.status(200).json({ updatedComponent });
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: e });
