@@ -3,3 +3,5 @@ export const EXPANSION_JOINTS_IMAGES_BASE_PATH = 'pgk/images/expansion-joints/';
 
 export const WATERSTOPS_COMPONENTS_BASE_PATH =
   'pgk/images/waterstops/components/';
+export const WATERSTOPS_CATEGORIES_BASE_PATH =
+  'pgk/images/waterstops/categories/';
