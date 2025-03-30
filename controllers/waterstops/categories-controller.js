@@ -2,6 +2,7 @@ import WaterstopCategoryModel from '../../models/waterstops/categories.js';
 import { WATERSTOPS_CATEGORIES_BASE_PATH } from '../../constants/constants.js';
 import crypto from 'crypto';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import JointsPartModel from '../../models/joints-parts.js';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -104,5 +105,27 @@ export const addWaterstopCategory = async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(400).send({ error: JSON.stringify(e) });
+  }
+};
+
+export const getWaterstopCategories = async (req, res) => {
+  const { searchName } = req.query;
+  try {
+    if (!searchName) {
+      const allCategories = await WaterstopCategoryModel.find()
+        .populate({
+          path: 'extraComponents.component',
+          model: 'WaterstopComponent',
+        })
+        .exec();
+      return res.status(200).json(allCategories);
+    }
+    const filteredWaterstopCategories = await WaterstopCategoryModel.find({
+      name: { $regex: new RegExp(searchName, 'i') },
+    });
+    res.status(200).json(filteredWaterstopCategories);
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send({ error: e });
   }
 };

@@ -53,7 +53,10 @@ import {
   updateWaterstopComponentImage,
   updateWaterstopsComponent,
 } from './controllers/waterstops/components-controller.js';
-import { addWaterstopCategory } from './controllers/waterstops/categories-controller.js';
+import {
+  addWaterstopCategory,
+  getWaterstopCategories,
+} from './controllers/waterstops/categories-controller.js';
 
 const app = express();
 
@@ -195,6 +198,8 @@ app.post(
   upload.fields([{ name: 'installation' }, { name: 'isometric' }]),
   addWaterstopCategory,
 );
+
+app.get('/waterstops/categories', checkAuth, getWaterstopCategories);
 
 app.listen(4444, (e) => {
   if (e) {
