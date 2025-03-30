@@ -2,7 +2,6 @@ import WaterstopCategoryModel from '../../models/waterstops/categories.js';
 import { WATERSTOPS_CATEGORIES_BASE_PATH } from '../../constants/constants.js';
 import crypto from 'crypto';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import JointsPartModel from '../../models/joints-parts.js';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
