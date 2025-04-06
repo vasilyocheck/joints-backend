@@ -55,6 +55,7 @@ import {
 } from './controllers/waterstops/components-controller.js';
 import {
   addWaterstopCategory,
+  deleteWaterstopCategory,
   getWaterstopCategories,
 } from './controllers/waterstops/categories-controller.js';
 
@@ -200,6 +201,8 @@ app.post(
 );
 
 app.get('/waterstops/categories', checkAuth, getWaterstopCategories);
+
+app.delete('/waterstops/categories/:id', checkAuth, deleteWaterstopCategory);
 
 app.listen(4444, (e) => {
   if (e) {

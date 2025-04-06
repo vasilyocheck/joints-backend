@@ -1,7 +1,13 @@
 import WaterstopCategoryModel from '../../models/waterstops/categories.js';
 import { WATERSTOPS_CATEGORIES_BASE_PATH } from '../../constants/constants.js';
 import crypto from 'crypto';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
+import ExpansionJointModel from '../../models/expansion-joints.js';
+import mongoose from 'mongoose';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -126,5 +132,49 @@ export const getWaterstopCategories = async (req, res) => {
   } catch (e) {
     console.log(e);
     return res.status(400).send({ error: e });
+  }
+};
+
+export const deleteWaterstopCategory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existingCategory = await WaterstopCategoryModel.findById(id);
+    if (!existingCategory) {
+      return res.status(404).json({
+        message: 'Waterstop category with the requested id not found',
+      });
+    }
+
+    const imageKeys = [
+      existingCategory.installationScheme.split(
+        `${endpoint}/${bucketName}/`,
+      )[1],
+      existingCategory.isometricScheme.split(`${endpoint}/${bucketName}/`)[1],
+    ];
+
+    const deleteCommands = imageKeys.map((key) => {
+      return new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+    });
+
+    await Promise.all(deleteCommands.map((command) => s3.send(command)))
+      .then(() => {
+        console.log('Files deleted successfully.');
+      })
+      .catch((err) => {
+        console.error('Error deleting files from S3:', err);
+        return res.status(500).send('Error deleting files from S3.');
+      });
+
+    await WaterstopCategoryModel.findByIdAndDelete(id);
+
+    return res.send({
+      message: 'Waterstop category has been deleted successfully.',
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ error: JSON.stringify(e) });
   }
 };
