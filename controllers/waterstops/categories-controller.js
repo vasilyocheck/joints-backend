@@ -6,8 +6,6 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import ExpansionJointModel from '../../models/expansion-joints.js';
-import mongoose from 'mongoose';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
