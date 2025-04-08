@@ -58,6 +58,10 @@ import {
   deleteWaterstopCategory,
   getWaterstopCategories,
 } from './controllers/waterstops/categories-controller.js';
+import {
+  addWaterstop,
+  getWaterstops,
+} from './controllers/waterstops/waterstops-controller.js';
 
 const app = express();
 
@@ -203,6 +207,15 @@ app.post(
 app.get('/waterstops/categories', checkAuth, getWaterstopCategories);
 
 app.delete('/waterstops/categories/:id', checkAuth, deleteWaterstopCategory);
+
+app.post(
+  '/waterstops/products',
+  checkAuth,
+  upload.fields([{ name: 'image3d' }, { name: 'drawing' }]),
+  addWaterstop,
+);
+
+app.get('/waterstops/products', checkAuth, getWaterstops);
 
 app.listen(4444, (e) => {
   if (e) {

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const waterstopComponentSchema = new mongoose.Schema({
+export const waterstopComponentSchema = new mongoose.Schema({
   component: {
     type: Schema.Types.ObjectId,
     ref: 'WaterstopComponent',
