@@ -60,6 +60,7 @@ import {
 } from './controllers/waterstops/categories-controller.js';
 import {
   addWaterstop,
+  deleteWaterstop,
   getWaterstops,
 } from './controllers/waterstops/waterstops-controller.js';
 
@@ -216,6 +217,8 @@ app.post(
 );
 
 app.get('/waterstops/products', checkAuth, getWaterstops);
+
+app.delete('/waterstops/products/:id', checkAuth, deleteWaterstop);
 
 app.listen(4444, (e) => {
   if (e) {

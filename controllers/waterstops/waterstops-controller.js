@@ -1,5 +1,9 @@
 import WaterstopModel from '../../models/waterstops/waterstops.js';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import crypto from 'crypto';
 import { WATERSTOPS_BASE_PATH } from '../../constants/constants.js';
 
@@ -140,6 +144,46 @@ export const getWaterstops = async (req, res) => {
     res.status(200).json(filteredWaterstops);
   } catch (e) {
     console.log(e);
+    res.status(400).send({ message: e.message });
+  }
+};
+
+export const deleteWaterstop = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const existingWaterstop = await WaterstopModel.findById(id);
+    if (!existingWaterstop) {
+      return res
+        .status(404)
+        .send({ message: 'Waterstop with the requested id not found' });
+    }
+
+    const imageKeys = [
+      existingWaterstop.image3d.split(`${endpoint}/${bucketName}/`)[1],
+      existingWaterstop.drawing.split(`${endpoint}/${bucketName}/`)[1],
+    ];
+
+    const deleteCommands = imageKeys.map((key) => {
+      return new DeleteObjectCommand({
+        Bucket: bucketName,
+        Key: key,
+      });
+    });
+
+    await Promise.all(deleteCommands.map((command) => s3.send(command)))
+      .then(() => {
+        console.log('Files deleted successfully.');
+      })
+      .catch((err) => {
+        console.error('Error deleting files from S3:', err);
+        return res.status(500).send('Error deleting files from S3.');
+      });
+
+    await WaterstopModel.findByIdAndDelete(id);
+
+    return res.send({ message: 'Waterstop deleted successfully.' });
+  } catch (e) {
+    console.error(e);
     res.status(400).send({ message: e.message });
   }
 };
