@@ -126,22 +126,32 @@ export const addWaterstop = async (req, res) => {
 };
 
 export const getWaterstops = async (req, res) => {
-  const { searchName } = req.query;
+  const { searchName, limit = 10, page = 1 } = req.query;
   try {
-    if (!searchName) {
-      const allWaterstops = await WaterstopModel.find()
-        .populate('category')
-        .populate({
-          path: 'individualAccessories.component',
-          model: 'WaterstopComponent',
-        })
-        .exec();
-      return res.status(200).json(allWaterstops);
-    }
-    const filteredWaterstops = await WaterstopModel.find({
-      productName: { $regex: new RegExp(searchName, 'i') },
+    const skip = (page - 1) * limit;
+    const query = searchName
+      ? { productName: { $regex: searchName, $options: 'i' } }
+      : {};
+
+    const waterstopsList = await WaterstopModel.find(query)
+      .populate('category')
+      .populate({
+        path: 'individualAccessories.component',
+        model: 'WaterstopComponent',
+      })
+      .skip(skip)
+      .limit(parseInt(limit, 10))
+      .exec();
+
+    const totalCount = await WaterstopModel.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    return res.status(200).json({
+      waterstopsList,
+      totalCount,
+      totalPages,
+      currentPage: parseInt(page, 10),
     });
-    res.status(200).json(filteredWaterstops);
   } catch (e) {
     console.log(e);
     res.status(400).send({ message: e.message });
