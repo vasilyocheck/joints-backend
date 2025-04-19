@@ -61,6 +61,7 @@ import {
 import {
   addWaterstop,
   deleteWaterstop,
+  getWaterstopById,
   getWaterstops,
 } from './controllers/waterstops/waterstops-controller.js';
 
@@ -217,6 +218,7 @@ app.post(
 );
 
 app.get('/waterstops/products', checkAuth, getWaterstops);
+app.get('/waterstops/products/:id', checkAuth, getWaterstopById);
 
 app.delete('/waterstops/products/:id', checkAuth, deleteWaterstop);
 

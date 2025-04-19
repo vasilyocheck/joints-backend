@@ -158,6 +158,24 @@ export const getWaterstops = async (req, res) => {
   }
 };
 
+export const getWaterstopById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const waterstop = await WaterstopModel.findById(id)
+      .populate('category')
+      .populate({
+        path: 'individualAccessories.component',
+        model: 'WaterstopComponent',
+      })
+      .exec();
+
+    return res.status(200).send(waterstop);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send({ message: e.message });
+  }
+};
+
 export const deleteWaterstop = async (req, res) => {
   const { id } = req.params;
   try {
