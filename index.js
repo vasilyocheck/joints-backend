@@ -218,7 +218,7 @@ app.post(
 );
 
 app.get('/waterstops/products', checkAuth, getWaterstops);
-app.get('/waterstops/products/:id', checkAuth, getWaterstopById);
+app.get('/waterstops/product/:id', checkAuth, getWaterstopById);
 
 app.delete('/waterstops/products/:id', checkAuth, deleteWaterstop);
 
