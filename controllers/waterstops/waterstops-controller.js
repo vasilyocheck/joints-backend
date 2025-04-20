@@ -164,6 +164,20 @@ export const getWaterstopById = async (req, res) => {
     const waterstop = await WaterstopModel.findById(id)
       .populate('category')
       .populate({
+        path: 'category',
+        populate: {
+          path: 'includedComponents.component',
+          model: 'WaterstopComponent',
+        },
+      })
+      .populate({
+        path: 'category',
+        populate: {
+          path: 'extraComponents.component',
+          model: 'WaterstopComponent',
+        },
+      })
+      .populate({
         path: 'individualAccessories.component',
         model: 'WaterstopComponent',
       })
