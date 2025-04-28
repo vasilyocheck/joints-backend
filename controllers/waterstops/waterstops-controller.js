@@ -139,6 +139,7 @@ export const getWaterstops = async (req, res) => {
         path: 'individualAccessories.component',
         model: 'WaterstopComponent',
       })
+      .sort({ productName: 1 })
       .skip(skip)
       .limit(parseInt(limit, 10))
       .exec();
